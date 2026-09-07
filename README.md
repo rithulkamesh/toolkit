@@ -1,5 +1,10 @@
 # toolkit
 
+[![CI](https://github.com/rithulkamesh/toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/rithulkamesh/toolkit/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/rithulkamesh/toolkit.svg)](https://pkg.go.dev/github.com/rithulkamesh/toolkit)
+[![Go Report Card](https://goreportcard.com/badge/github.com/rithulkamesh/toolkit)](https://goreportcard.com/report/github.com/rithulkamesh/toolkit)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 Small, dependency-free Go building blocks for standing up a JSON API service:
 a concurrent DAG executor, HTTP middleware for an API gateway, typed env
 config, an outbound-host guard for LLM/third-party calls, and an SMTP mailer.
@@ -11,9 +16,6 @@ sitting.
 ```
 go get github.com/rithulkamesh/toolkit@latest
 ```
-
-> The module path above is a placeholder — **rename it to your own first**:
-> `scripts/rename-module.sh github.com/you/toolkit`
 
 ## Packages
 

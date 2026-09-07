@@ -1,0 +1,7 @@
+version: 2
+updates:
+  # Only the CI action versions — the Go module itself stays dependency-free.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly

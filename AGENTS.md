@@ -77,13 +77,6 @@ docker run --rm -v "$PWD":/src -w /src golang:1.23-alpine sh -c \
   'go vet ./... && go test ./... && go build ./...'
 ```
 
-## Renaming the module
-
-The module path in `go.mod` is a placeholder
-(`github.com/rithulkamesh/toolkit`). If the user has not renamed it yet, offer
-to run `scripts/rename-module.sh github.com/<them>/<name>` and update every
-import.
-
 ## Out of scope
 
 Don't add a web framework, a router, an ORM, a config-file loader, a DI
