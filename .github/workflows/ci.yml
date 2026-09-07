@@ -76,6 +76,8 @@ jobs:
           # otelx and kafkax/franz require Go 1.25+, awssm requires 1.24+.
           go-version: stable
           check-latest: true
+          # Default cache keys off a go.sum at the repo root; there isn't one.
+          cache: false
 
       - name: gofmt
         working-directory: ${{ matrix.module }}
