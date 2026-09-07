@@ -109,9 +109,6 @@ added as a separate module so consumers opt in:
 - `otelx` — one-call OpenTelemetry traces + metrics with a Prometheus endpoint.
 - `kafkax` — an event `Envelope`, DLQ writer, and W3C trace-context over Kafka headers.
 - `secretsx` — Vault KV v2 with env fallback.
-- `connectorkit` — a `Provider` interface + registry for third-party integrations (OAuth, poll/webhook, tool calls).
-- A Rust "durable step worker" template that consumes events and executes `dag` steps.
-- A React + TanStack frontend starter (typed fetch client, SSE run timeline, DAG visualiser).
 
 ## License
 
