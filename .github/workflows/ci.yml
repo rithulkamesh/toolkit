@@ -22,6 +22,8 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
           check-latest: true
+          # No go.sum (dependency-free module) — nothing to cache.
+          cache: false
 
       - name: gofmt
         run: |
