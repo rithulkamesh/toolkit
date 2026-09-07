@@ -6,8 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 Small, dependency-free Go building blocks for standing up a JSON API service:
-a concurrent DAG executor, HTTP middleware for an API gateway, typed env
-config, an outbound-host guard for LLM/third-party calls, and an SMTP mailer.
+HTTP middleware for an API gateway, typed env config, an outbound-host guard
+for LLM/third-party calls, and an SMTP mailer.
 
 Extracted and generalised from a production multi-service platform. Every
 package is stdlib-only, independently useful, and small enough to read in one
@@ -21,7 +21,6 @@ go get github.com/rithulkamesh/toolkit@latest
 
 | Package | What it does | Size |
 |---|---|---|
-| [`dag`](./dag) | Run a dependency graph of work concurrently, in order, with cascading failure handling. Generic over any `{ ID(); DependsOn() }` type. | ~250 LoC |
 | [`httpx`](./httpx) | Composable `net/http` middleware: auth, scopes, CSRF, rate limiting, CORS, timeouts, request IDs, access logging, health/readiness. You bring the auth logic; it wires everything else. | ~700 LoC |
 | [`env`](./env) | `env.String/Int/Bool/Duration/List` with fallbacks; `env.Required/MustString` for startup config. | ~90 LoC |
 | [`llmguard`](./llmguard) | Fail-closed allowlist for outbound API hosts, so a bad prompt or config can't exfiltrate to an arbitrary endpoint. Exact + `*.wildcard` matching. | ~110 LoC |
@@ -77,13 +76,12 @@ func main() {
 }
 ```
 
-A complete runnable version, including a concurrent `dag` pipeline endpoint, is
-in [`examples/service`](./examples/service):
+A complete runnable version is in [`examples/service`](./examples/service):
 
 ```
 go run ./examples/service
 curl localhost:8080/healthz
-curl -H 'Authorization: Bearer demo' -X POST localhost:8080/pipeline
+curl -H 'Authorization: Bearer demo' localhost:8080/v1/things
 ```
 
 ## Using it with an AI coding agent

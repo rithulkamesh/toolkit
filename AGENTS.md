@@ -7,9 +7,8 @@ Instructions for an AI coding agent working in this repository. (Also valid as
 
 A small library of **dependency-free Go building blocks** for standing up a
 JSON API service. It is a foundation to build an application *on top of*, not an
-application itself. Five packages:
+application itself. Four packages:
 
-- `dag/` — concurrent dependency-graph executor, generic over a `Node` interface.
 - `httpx/` — composable `net/http` middleware for an API gateway.
 - `env/` — typed environment-variable reads with fallbacks.
 - `llmguard/` — fail-closed outbound-host allowlist.
@@ -41,8 +40,6 @@ application itself. Five packages:
   bodies via `httpx.JSON(w, status, v)`.
 - Config structs take a `withDefaults()` method rather than requiring every
   field (see `httpx.CSRFConfig`).
-- `dag` stays generic: never import a concrete workflow/step type into it. The
-  only contract is `Node { ID() string; DependsOn() []string }`.
 - Prefer clarity over cleverness. These files are meant to be read start to
   finish by a human evaluating whether to adopt the library.
 
@@ -55,10 +52,6 @@ doc comment, a row in `httpx/README.md`'s reference table, and a test in
 **Add an `env` getter:** new function in `env/env.go` following the
 `(key, fallback) -> value` shape (never returns an error; add a `Required`
 variant if a missing value should fail), plus a `env_test.go` case.
-
-**Add a `dag` capability:** keep it generic over `[T Node]`. Add to
-`dag/README.md`'s building-blocks table and cover it in `dag/dag_test.go`,
-including a concurrency/failure case if it touches `Run`.
 
 **Pull another block out of the roadmap** (e.g. `otelx`, `kafkax`): create it
 as its **own module** in a subdirectory with its own `go.mod`, so this module
