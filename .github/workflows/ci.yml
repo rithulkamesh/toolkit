@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  root:
+    name: root module
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -46,10 +47,54 @@ jobs:
       - name: verify zero dependencies
         run: |
           if [ -f go.sum ]; then
-            echo "go.sum exists — this module must stay dependency-free"
+            echo "go.sum exists — the root module must stay dependency-free"
             exit 1
           fi
           if grep -q '^require' go.mod; then
-            echo "go.mod has a require block — this module must stay dependency-free"
+            echo "go.mod has a require block — the root module must stay dependency-free"
             exit 1
           fi
+
+  modules:
+    name: ${{ matrix.module }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - secretsx
+          - secretsx/vault
+          - secretsx/awssm
+          - kafkax
+          - kafkax/franz
+          - otelx
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          # otelx and kafkax/franz require Go 1.25+, awssm requires 1.24+.
+          go-version: stable
+          check-latest: true
+
+      - name: gofmt
+        working-directory: ${{ matrix.module }}
+        run: |
+          out=$(gofmt -l .)
+          if [ -n "$out" ]; then
+            echo "these files are not gofmt'd:"
+            echo "$out"
+            exit 1
+          fi
+
+      - name: go vet
+        working-directory: ${{ matrix.module }}
+        run: go vet ./...
+
+      - name: go test -race
+        working-directory: ${{ matrix.module }}
+        run: go test -race ./...
+
+      - name: go build
+        working-directory: ${{ matrix.module }}
+        run: go build ./...

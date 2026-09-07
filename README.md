@@ -99,14 +99,21 @@ make test
 
 Go 1.23+ (generics with methods, `slices`, `log/slog`).
 
-## Roadmap
+## Companion modules
 
-Deliberately left out of v1 to keep the module dependency-free. Each can be
-added as a separate module so consumers opt in:
+Kept out of the root module so it stays dependency-free — each is its own Go
+module with its own `go.mod`, so you pull a dependency tree only for what you
+import. Every one is multi-provider: a stdlib-only core interface plus opt-in
+nested modules for the heavy backends.
 
-- `otelx` — one-call OpenTelemetry traces + metrics with a Prometheus endpoint.
-- `kafkax` — an event `Envelope`, DLQ writer, and W3C trace-context over Kafka headers.
-- `secretsx` — Vault KV v2 with env fallback.
+| Module | What it does | Deps |
+|---|---|---|
+| [`secretsx`](./secretsx) | `Provider` interface + `Chain` (real backend, then env fallback), `Cached`, and stdlib `Env` / `Dir` / `JSONFile` providers. | none |
+| [`secretsx/vault`](./secretsx/vault) | HashiCorp Vault KV v2 over `net/http` — static-token, token-file, and Kubernetes auth. | none |
+| [`secretsx/awssm`](./secretsx/awssm) | AWS Secrets Manager + SSM Parameter Store, with JSON-field extraction. | aws-sdk-go-v2 |
+| [`kafkax`](./kafkax) | CloudEvents-shaped `Envelope`, `Producer`/`Consumer` interfaces, W3C trace-context over headers, and a dead-letter-queue `Handler` wrapper. | none |
+| [`kafkax/franz`](./kafkax/franz) | franz-go binding: `Envelope` ⇄ `kgo.Record`, batch-commit consume loop. | franz-go |
+| [`otelx`](./otelx) | One-call OpenTelemetry traces + metrics. Exporter switch: OTLP/gRPC, OTLP/HTTP, Prometheus `/metrics`, stdout, none. | otel sdk |
 
 ## License
 

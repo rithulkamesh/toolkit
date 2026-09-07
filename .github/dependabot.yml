@@ -1,7 +1,23 @@
 version: 2
 updates:
-  # Only the CI action versions — the Go module itself stays dependency-free.
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: weekly
+
+  # The root module is dependency-free; these are the companion modules.
+  - package-ecosystem: gomod
+    directories:
+      - /secretsx
+      - /secretsx/vault
+      - /secretsx/awssm
+      - /kafkax
+      - /kafkax/franz
+      - /otelx
+    schedule:
+      interval: weekly
+    groups:
+      otel:
+        patterns: ["go.opentelemetry.io/*"]
+      aws:
+        patterns: ["github.com/aws/*"]

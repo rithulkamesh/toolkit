@@ -17,11 +17,12 @@ application itself. Four packages:
 
 ## Hard constraints — do not break these
 
-1. **Standard library only.** No third-party imports anywhere in the module.
-   `go.mod` has no `require` block and `go.sum` does not exist. If a task seems
-   to need a dependency, stop and propose it to the user as a *separate* module
-   under the roadmap instead of adding it here.
-2. **Go 1.23+**, and keep it that way unless the user asks to bump it.
+1. **Standard library only — the root module.** No third-party imports under
+   `httpx/`, `env/`, `llmguard/`, `mail/`, `examples/`. The root `go.mod` has no
+   `require` block and `go.sum` does not exist. A block that needs a dependency
+   goes in its own nested module (see "Companion modules" below), never here.
+2. **Go 1.23+** for the root module, and keep it that way unless the user asks
+   to bump it. Nested modules track their heaviest dependency's minimum.
 3. **Every exported symbol has a doc comment** that starts with its name.
 4. **Every package keeps its `README.md` and/or `doc.go` in sync** with the
    code. If you change behaviour, update the prose in the same change.
@@ -53,9 +54,36 @@ doc comment, a row in `httpx/README.md`'s reference table, and a test in
 `(key, fallback) -> value` shape (never returns an error; add a `Required`
 variant if a missing value should fail), plus a `env_test.go` case.
 
-**Pull another block out of the roadmap** (e.g. `otelx`, `kafkax`): create it
-as its **own module** in a subdirectory with its own `go.mod`, so this module
-stays dependency-free. Update the root `README.md` roadmap section.
+**Add a companion module** (a block that needs dependencies): create it as its
+**own module** in a subdirectory with its own `go.mod`, so the root module
+stays dependency-free. Add a row to the root `README.md` "Companion modules"
+table and a matrix entry in `.github/workflows/ci.yml`'s `modules` job.
+
+## Companion modules
+
+Multi-provider blocks that carry dependencies. Each is a separate Go module:
+
+- `secretsx/` — `Provider` interface, `Chain`, `Cached`, stdlib `Env`/`Dir`/
+  `JSONFile`. Stdlib only.
+- `secretsx/vault/` — Vault KV v2 over `net/http`. Stdlib only.
+- `secretsx/awssm/` — AWS Secrets Manager + SSM Parameter Store. Uses aws-sdk-go-v2.
+- `kafkax/` — `Envelope`, `Producer`/`Consumer`, W3C trace-context, DLQ wrapper.
+  Stdlib only.
+- `kafkax/franz/` — franz-go binding. Uses github.com/twmb/franz-go.
+- `otelx/` — OpenTelemetry traces + metrics, exporter switch. Uses the OTel SDK.
+
+Rules:
+
+- A nested module that talks to the shared core (`secretsx/vault` → `secretsx`)
+  uses a `replace github.com/rithulkamesh/toolkit/<core> => ../` directive so
+  the repo builds against local code. Publishing standalone needs a real
+  per-module tag (`secretsx/v0.1.0`) and the `require` updated to match.
+- Each provider registers itself with the core's DSN registry in an `init`
+  (`secretsx.Register("vault", ...)`), so `secretsx.Open("vault:...")` works
+  after a blank import.
+- Backends are testable without the real service: mock the HTTP API with
+  `httptest` (Vault), or take a narrow client interface and pass a fake
+  (`SecretsManagerAPI`, franz record mapping).
 
 ## Checks to run before finishing
 
